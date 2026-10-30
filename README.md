@@ -13,9 +13,11 @@
 ![Languages](https://img.shields.io/badge/lang-EN%20%7C%20RU-6C77B6)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4C7A35)](LICENSE)
 
-**English** · [Русский](README.ru.md)
+**English** · [Русский](README.ru.md) · [Changelog](CHANGELOG.md)
 
 <img src="docs/screenshots/en/1-room.jpg" width="200" /> <img src="docs/screenshots/en/3-pantry.jpg" width="200" /> <img src="docs/screenshots/en/4-lodgers.jpg" width="200" /> <img src="docs/screenshots/en/7-catch.jpg" width="200" />
+
+**[Download the APK](https://github.com/bigdevwhale/nooklings/releases/latest/download/Nooklings.apk)** · Android 9+
 
 </div>
 
