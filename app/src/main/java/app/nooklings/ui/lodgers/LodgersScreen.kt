@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,10 +56,11 @@ fun LodgersScreen(h: Home, nav: Nav) {
                 Modifier.fillMaxWidth().tray().then(if (l != null) Modifier.clickable { nav.lodger(p) } else Modifier).padding(horizontal = 6.dp, vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                BufImage(img, scale = 3.dp)
-                Text(if (l != null) stringResource(Names.pet(p)) else "???", style = T.Heading.copy(color = C.paper))
-                Text(stringResource(if (l != null) R.string.l_eats else R.string.l_will, tags), style = T.Small.copy(color = C.paperD), textAlign = TextAlign.Center)
-                if (l != null) Bar(l.food.toFloat() / 100)
+                // Every tile the same size: the picture in a fixed frame, two lines of text, the bar always there.
+                Box(Modifier.height(80.dp), contentAlignment = Alignment.BottomCenter) { BufImage(img, scale = 3.dp) }
+                Text(if (l != null) stringResource(Names.pet(p)) else "???", style = T.Heading.copy(color = C.paper), maxLines = 1)
+                Text(stringResource(if (l != null) R.string.l_eats else R.string.l_will, tags), style = T.Small.copy(color = C.paperD), textAlign = TextAlign.Center, minLines = 2, maxLines = 2)
+                Bar(l?.food?.toFloat()?.div(100) ?: 0f, Modifier.alpha(if (l != null) 1f else 0f))
             }
         }
     }

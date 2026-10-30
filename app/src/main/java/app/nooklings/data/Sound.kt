@@ -21,7 +21,8 @@ class Recorder(private val c: Context) {
     var file: File? = null
         private set
 
-    fun start(): Boolean = runCatching {
+    /** Starts once; a second call while recording keeps the first take. */
+    fun start(): Boolean = if (rec != null) true else runCatching {
         val f = Files.newSound(c)
         val r = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(c) else @Suppress("DEPRECATION") MediaRecorder()
         r.setAudioSource(AudioSource.MIC)
@@ -44,10 +45,15 @@ class Recorder(private val c: Context) {
         val ok = runCatching { rec?.stop() }.isSuccess
         release()
         val f = file
+        file = null
         return if (ok && f != null && f.length() > 0) f else { f?.delete(); null }
     }
 
-    fun cancel() { runCatching { rec?.stop() }; release(); file?.delete(); file = null }
+    /** Drops a take still being recorded; a finished one belongs to its jar now. */
+    fun cancel() {
+        if (rec == null) return
+        runCatching { rec?.stop() }; release(); file?.delete(); file = null
+    }
 
     private fun release() { runCatching { rec?.release() }; rec = null }
 }

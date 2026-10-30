@@ -83,7 +83,7 @@ fun PantryScreen(h: Home, nav: Nav) {
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(3.dp),
             ) {
                 BufImage(JarArt.draw(j.look()), scale = 5.dp)
-                Text(j.label, style = T.LabelSmall, textAlign = TextAlign.Center, maxLines = 3)
+                Text(j.label, style = T.LabelSmall, textAlign = TextAlign.Center, minLines = 2, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 Text(DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(j.at)), style = T.Small.copy(color = C.paperD), maxLines = 1)
             }
         }

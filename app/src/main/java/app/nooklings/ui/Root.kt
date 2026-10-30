@@ -76,12 +76,17 @@ fun NookRoot(s: Settings, clock: Long? = null, tab0: Tab = Tab.ROOM, overlay0: O
     val ctx = LocalContext.current
     val c = ctx.container
     if (!s.onboarded) { Onboarding(); return }
-    val jars by c.jars.all().collectAsStateWithLifecycle(initialValue = null)
-    val openings by c.jars.openings().collectAsStateWithLifecycle(initialValue = emptyList())
+    // The flows are made once: a new flow on every recomposition would restart the collection,
+    // drop back to null for a frame and rebuild every screen under it.
+    val jarsFlow = remember { c.jars.all() }
+    val openingsFlow = remember { c.jars.openings() }
+    val jars by jarsFlow.collectAsStateWithLifecycle(initialValue = null)
+    val openings by openingsFlow.collectAsStateWithLifecycle(initialValue = emptyList())
     var now by remember { mutableLongStateOf(clock ?: System.currentTimeMillis()) }
     LaunchedEffect(Unit) { if (clock == null) { c.dreamIfIdle(); while (true) { c.refreshWeather(); delay(60_000); now = System.currentTimeMillis() } } }
     val list = jars ?: return
-    val h = remember(list, openings, s, now) { Home(list, openings, s, now, ctx.ru) }
+    // A jar just rolled must count at once, not at the next minute's tick.
+    val h = remember(list, openings, s, now) { Home(list, openings, s, if (clock == null) maxOf(now, System.currentTimeMillis()) else now, ctx.ru) }
     val bus = remember { Bus() }
     var tab by rememberSaveable { mutableStateOf(tab0) }
     var overlay by remember { mutableStateOf(overlay0) }

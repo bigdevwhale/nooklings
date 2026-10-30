@@ -36,7 +36,7 @@ class RoomModel(
 class RoomFx(
     /** Everyone by the stove: full in the evening, or listening to an opened jar. */
     val pile: Boolean = false,
-    /** The stove flares while a jar is open. */
+    /** The stove flares while a jar is open, and those who came to listen are awake. */
     val flare: Boolean = false,
     /** A jar flying to its slot: which, how far along (0..1). */
     val flyId: Long? = null,
@@ -453,11 +453,11 @@ class RoomScene(val m: RoomModel, val H: Int = BASE_H) {
         rows.forEachIndexed { j, r -> r.forEachIndexed { i, ch -> if (ch != '.') p(x + i, y + j, col, a) } }
     }
 
-    fun pose(p: Pet, t: Double): PetPose {
+    fun pose(p: Pet, t: Double, listening: Boolean = false): PetPose {
         val l = m.lodgers.getValue(p)
         val h = hashI(p.name)
         val f = ((t * 2).toInt() + h % 4) % 4
-        val sleep = l.cold || (m.phase == Phase.NIGHT && p != Pet.MOTH) || (p == Pet.DORMOUSE && l.fed)
+        val sleep = l.cold || (!listening && ((m.phase == Phase.NIGHT && p != Pet.MOTH) || (p == Pet.DORMOUSE && l.fed)))
         return PetPose(f, ((t + h % 7) % 4.4) < .15, sleep, l.cold, l.fed)
     }
 
@@ -468,7 +468,7 @@ class RoomScene(val m: RoomModel, val H: Int = BASE_H) {
         clock(b, t, fx.clock)
         val placed = ArrayList<Triple<Pet, IntArray, PetPose>>()
         fun put(p: Pet, at: IntArray) {
-            val o = pose(p, t)
+            val o = pose(p, t, fx.pile && fx.flare)
             val img = PetArt.draw(p, o)
             val dy = if (!o.sleep && o.f == 2 && p != Pet.BULLFINCH) -1 else 0
             b.blit(img, at[0], at[1] + dy, fx.fade[p] ?: 1f)
@@ -483,13 +483,15 @@ class RoomScene(val m: RoomModel, val H: Int = BASE_H) {
 
         // банки светятся сами
         val night = m.phase != Phase.DAY
-        val f = (t * 2).toInt() % 2
         shelf.forEachIndexed { k, j ->
             val (x, y) = slot(k)
             hits += intArrayOf(x, y, JarArt.W, JarArt.H) to Spot.Jar(j.id)
             if (j.id == fx.flyId && fx.fly < 1) return@forEachIndexed
             if (night) b.glow(x + 4.0, y + 9.0, if (j.look.rare) 7 else 5, mix(j.look.tint, rgb(0), if (j.look.rare) .55f else .72f))
-            b.blit(JarArt.draw(j.look, f), x, y)
+            b.blit(JarArt.draw(j.look), x, y)
+            // a slow glint breathing in the glass instead of pixels jumping
+            val g = (sin(t * (if (j.look.rare) 1.6 else .9) + (j.id % 17) * .7) + 1) / 2
+            b.p(x + 3, y + 7, rgb(0xFFFFFF), (g * g * if (j.look.rare) .9 else .55).toFloat())
         }
         if (Gift.CANDLE in has) { val fl = (t * 6).toInt() % 2; b.px(57, 93, rgb(0xFFCF5A)); b.px(57, 92 - fl, rgb(0xFFF2B0)); if (fl == 1) b.px(57, 91, rgb(0xFFCF5A)) }
         if (Gift.GARLAND in has) for (i in 0 until 13) {
@@ -518,7 +520,7 @@ class RoomScene(val m: RoomModel, val H: Int = BASE_H) {
             val (x1, y1) = slot(k)
             val x = 84 + (x1 - 84) * e; val y = 110 + (y1 - 110) * e - sin(e * PI) * 30
             b.glow(x + 4, y + 9, 8, mix(shelf[k].look.tint, rgb(0), .5f))
-            b.blit(JarArt.draw(shelf[k].look, f), x.roundToInt(), y.roundToInt())
+            b.blit(JarArt.draw(shelf[k].look), x.roundToInt(), y.roundToInt())
         }
         fx.landedAge?.let { a ->
             if (k >= 0 && a in 0.0..1.0) {

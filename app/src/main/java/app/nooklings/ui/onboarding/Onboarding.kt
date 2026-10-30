@@ -55,7 +55,7 @@ fun Onboarding() {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
                 when (page) {
                     0 -> for (p in Pet.entries) BufImage(PetArt.draw(p, PetPose(f = (tick / 6 + p.ordinal) % 4, blink = (tick + p.ordinal * 7) % 40 < 2, fed = true)), scale = 2.dp)
-                    1 -> for (t in listOf(Tag.SKY, Tag.TEA, Tag.WARM, Tag.QUIET, Tag.PEOPLE)) BufImage(JarArt.draw(JarLook(t.color, t), (tick / 6) % 2), scale = 5.dp)
+                    1 -> for (t in listOf(Tag.SKY, Tag.TEA, Tag.WARM, Tag.QUIET, Tag.PEOPLE)) BufImage(JarArt.draw(JarLook(t.color, t)), scale = 5.dp)
                     else -> BufImage(PetArt.draw(Pet.BULLFINCH, PetPose(f = (tick / 6) % 4, fed = true)), scale = 4.dp)
                 }
             }

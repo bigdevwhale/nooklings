@@ -161,7 +161,7 @@ private fun Wave(levels: List<Float>) {
         val p = size.width / (n * 2)
         val tail = levels.takeLast(n)
         tail.forEachIndexed { i, v ->
-            val hh = ((v * 6).coerceIn(.03f, 1f) * size.height / p).toInt().coerceAtLeast(1) * p
+            val hh = ((kotlin.math.sqrt(v) * 1.6f).coerceIn(.03f, 1f) * size.height / p).toInt().coerceAtLeast(1) * p
             drawRect(C.brass, Offset(i * 2 * p, (size.height - hh) / 2), Size(p, hh))
             drawRect(C.brassL, Offset(i * 2 * p, (size.height - hh) / 2), Size(p, p))
         }
@@ -179,8 +179,10 @@ private fun SoundStep(done: (Cap) -> Unit, back: () -> Unit) {
     var failed by remember { mutableStateOf(false) }
     val rec = remember { Recorder(ctx) }
     DisposableEffect(Unit) { onDispose { rec.cancel() } }
-    LaunchedEffect(granted) {
-        if (granted != true) return@LaunchedEffect
+    // The key is read once: the permission may be granted while the first effect is still starting.
+    val ok = granted
+    LaunchedEffect(ok) {
+        if (ok != true) return@LaunchedEffect
         if (!rec.start()) { failed = true; return@LaunchedEffect }
         val t0 = System.currentTimeMillis()
         while (isActive && System.currentTimeMillis() - t0 < 10_000) {
@@ -213,8 +215,10 @@ private fun QuietStep(done: () -> Unit, back: () -> Unit) {
     var loud by remember { mutableStateOf(false) }
     val meter = remember { Meter() }
     DisposableEffect(Unit) { onDispose { meter.stop() } }
-    LaunchedEffect(granted) {
-        if (granted != true) return@LaunchedEffect
+    // The key is read once: the permission may be granted while the first effect is still starting.
+    val ok = granted
+    LaunchedEffect(ok) {
+        if (ok != true) return@LaunchedEffect
         val listening = meter.start()
         var last = System.currentTimeMillis(); var noisy = 0f
         while (isActive && got < need) {
@@ -268,8 +272,10 @@ private fun WalkStep(done: (Cap) -> Unit, back: () -> Unit) {
     LaunchedEffect(Unit) { ask() }
     var steps by remember { mutableStateOf<Long?>(null) }
     var total by remember { mutableStateOf<Long?>(null) }
-    LaunchedEffect(granted) {
-        if (granted != true) return@LaunchedEffect
+    // The key is read once: the permission may be granted while the first effect is still starting.
+    val ok = granted
+    LaunchedEffect(ok) {
+        if (ok != true) return@LaunchedEffect
         val t = Steps.total(ctx) ?: return@LaunchedEffect
         val s = c.settings.now()
         if (s.stepBase < 0 || t < s.stepBase) c.settings.update { it.copy(stepBase = t, stepBaseAt = System.currentTimeMillis()) }
@@ -332,7 +338,7 @@ private fun SealStep(cap: Cap, tag: Tag, done: () -> Unit) {
     val j = draft ?: return
     val k = if (start < 0) 0 else tick - start
     Heading(stringResource(R.string.c_seal))
-    BufImage(JarArt.draw(j.look(), k % 2, fill = (k / 8f).coerceAtMost(1f), lid = k > 10), scale = 9.dp)
+    BufImage(JarArt.draw(j.look(), 0, fill = (k / 8f).coerceAtMost(1f), lid = k > 10), scale = 9.dp)
     Field(label, { label = it.take(40) }, stringResource(Names.label(tag)), Modifier.widthIn(max = 320.dp), style = T.Label)
     Text(listOfNotNull(j.wx?.let { stringResource(Names.wx(it)) }, j.temp?.let { (if (it > 0) "+" else "") + it + "°" }, j.place.takeIf { it.isNotBlank() }).joinToString(" · "),
         style = T.Small.copy(color = C.paperD))

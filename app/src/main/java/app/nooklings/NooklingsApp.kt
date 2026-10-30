@@ -3,6 +3,7 @@ package app.nooklings
 import android.app.Application
 import android.content.Context
 import app.nooklings.data.DAY
+import app.nooklings.data.HOUR
 import app.nooklings.data.DemoSeed
 import app.nooklings.data.Files
 import app.nooklings.data.Jar
@@ -16,7 +17,6 @@ import app.nooklings.domain.Dreams
 import app.nooklings.domain.Gift
 import app.nooklings.domain.House
 import app.nooklings.domain.Pet
-import app.nooklings.domain.Phase
 import app.nooklings.domain.Sky
 import app.nooklings.domain.Tag
 import app.nooklings.domain.Wx
@@ -66,9 +66,7 @@ class AppContainer(context: Context) {
     suspend fun draft(tag: Tag, kind: Catch, label: String, now: Long = System.currentTimeMillis()): Jar {
         val s = settings.now()
         val o = s.outside?.takeIf { s.liveWeather && now - it.at < 3 * 60 * 60 * 1000L }
-        val p = s.place ?: Sky.guess()
-        val night = Sky.phase(now, p.lat, p.lon) == Phase.NIGHT
-        val rare = o?.wx == Wx.SNOW || o?.wx == Wx.STORM || (night && tag != Tag.QUIET)
+        val rare = o?.wx == Wx.SNOW || o?.wx == Wx.STORM
         return Jar(tag = tag, kind = kind, label = label, at = now, wx = o?.wx, temp = o?.temp, place = s.place?.name.orEmpty(), rare = rare)
     }
 
@@ -127,6 +125,13 @@ class AppContainer(context: Context) {
         settings.update { it.copy(dream = d.key, dreamAt = now) }
     }
 
+    /** Recordings and photos left by a catch that was never put on the shelf (an hour old or more). */
+    suspend fun tidy(now: Long = System.currentTimeMillis()) {
+        val keep = jars.list().flatMap { listOfNotNull(it.sound, it.photo) }.toSet()
+        for (f in listOf(Files.sounds(app), Files.photos(app)).flatMap { it.listFiles()?.toList().orEmpty() })
+            if (f.name !in keep && now - f.lastModified() > HOUR) f.delete()
+    }
+
     fun walks(on: Boolean) {
         write { settings.update { it.copy(autoWalks = on) } }
         Steps.schedule(app, on)
@@ -140,6 +145,7 @@ class NooklingsApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        container.write { tidy() }
         if (BuildConfig.DEMO) container.scope.launch { try { DemoSeed.seedIfEmpty(this@NooklingsApp, container) } finally { container.seeding.value = false } }
     }
 }
