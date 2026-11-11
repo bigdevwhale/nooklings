@@ -70,7 +70,7 @@ import kotlin.math.roundToInt
 val PX: Dp = 2.dp
 
 /** A pixel box: an ink outline with notched corners, a fill, a light bevel on top and a darker lip below. */
-fun Modifier.pixelBox(fill: Color, outline: Color = C.ink, bevel: Color? = Color.White.copy(alpha = .4f), lip: Color? = Color(0x30200C08), pressed: Boolean = false): Modifier = drawBehind {
+fun Modifier.pixelBox(fill: Color, outline: Color = C.ink, bevel: Color? = Color.White.copy(alpha = .4f), lip: Color? = Color(0x300C0E20), pressed: Boolean = false): Modifier = drawBehind {
     val p = PX.toPx()
     val w = size.width
     val h = size.height
@@ -204,7 +204,7 @@ fun Field(value: String, onChange: (String) -> Unit, hint: String, modifier: Mod
 fun Sheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     BackHandler(onBack = onDismiss)
     val closeLabel = stringResource(R.string.close)
-    Box(Modifier.fillMaxSize().background(Color(0xB0140A06)).clickable(remember { MutableInteractionSource() }, null, onClick = onDismiss).imePadding(), contentAlignment = Alignment.BottomCenter) {
+    Box(Modifier.fillMaxSize().background(Color(0xB00A0C1C)).clickable(remember { MutableInteractionSource() }, null, onClick = onDismiss).imePadding(), contentAlignment = Alignment.BottomCenter) {
         Column(
             Modifier.fillMaxWidth().widthIn(max = 560.dp).heightIn(max = 760.dp)
                 .drawBehind { drawRect(C.paper); drawRect(C.ink, size = Size(size.width, PX.toPx())); drawRect(C.brass, Offset(0f, PX.toPx()), Size(size.width, 2 * PX.toPx())) }

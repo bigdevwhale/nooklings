@@ -118,7 +118,7 @@ private fun Bubble(h: Home, pile: Boolean, gathering: Boolean, onPet: (Pet) -> U
     var saidTick by remember { mutableIntStateOf(-10_000) }
     LaunchedEffect(stamp) { if (said.isNotEmpty()) saidTick = tick }
     val (who, text, pet) = when {
-        said.isNotEmpty() && tick - saidTick < 60 -> Triple(null, said, null)
+        said.isNotEmpty() && (tick - saidTick) * Art.FRAME_MS < 5_400 -> Triple(null, said, null)
         gathering -> Triple(null, stringResource(R.string.pile_listen), null)
         pile -> Triple(null, stringResource(R.string.pile_full), null)
         h.dream != null -> Triple(stringResource(R.string.dream_label), h.dream.text(h.ru), h.dream.pet)

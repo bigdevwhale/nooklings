@@ -456,7 +456,7 @@ class RoomScene(val m: RoomModel, val H: Int = BASE_H) {
     fun pose(p: Pet, t: Double, listening: Boolean = false): PetPose {
         val l = m.lodgers.getValue(p)
         val h = hashI(p.name)
-        val f = ((t * 2).toInt() + h % 4) % 4
+        val f = PetArt.idle(t, h)
         val sleep = l.cold || (!listening && ((m.phase == Phase.NIGHT && p != Pet.MOTH) || (p == Pet.DORMOUSE && l.fed)))
         return PetPose(f, ((t + h % 7) % 4.4) < .15, sleep, l.cold, l.fed)
     }
@@ -470,8 +470,7 @@ class RoomScene(val m: RoomModel, val H: Int = BASE_H) {
         fun put(p: Pet, at: IntArray) {
             val o = pose(p, t, fx.pile && fx.flare)
             val img = PetArt.draw(p, o)
-            val dy = if (!o.sleep && o.f == 2 && p != Pet.BULLFINCH) -1 else 0
-            b.blit(img, at[0], at[1] + dy, fx.fade[p] ?: 1f)
+            b.blit(img, at[0], at[1], fx.fade[p] ?: 1f)
             hits += intArrayOf(at[0] - 2, at[1] - 2, img.w + 4, img.h + 4) to Spot.Lodger(p)
             placed += Triple(p, at, o)
         }

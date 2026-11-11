@@ -29,6 +29,7 @@ import app.nooklings.R
 import app.nooklings.container
 import app.nooklings.domain.Pet
 import app.nooklings.domain.Tag
+import app.nooklings.ui.art.Art
 import app.nooklings.ui.art.JarArt
 import app.nooklings.ui.art.JarLook
 import app.nooklings.ui.art.PetArt
@@ -54,9 +55,9 @@ fun Onboarding() {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
                 when (page) {
-                    0 -> for (p in Pet.entries) BufImage(PetArt.draw(p, PetPose(f = (tick / 6 + p.ordinal) % 4, blink = (tick + p.ordinal * 7) % 40 < 2, fed = true)), scale = 2.dp)
+                    0 -> for (p in Pet.entries) BufImage(PetArt.draw(p, PetPose(f = PetArt.idle(tick * Art.FRAME_MS / 1000.0, p.ordinal * 7), blink = (tick * Art.FRAME_MS + p.ordinal * 630) % 3600 < 180, fed = true)), scale = 2.dp)
                     1 -> for (t in listOf(Tag.SKY, Tag.TEA, Tag.WARM, Tag.QUIET, Tag.PEOPLE)) BufImage(JarArt.draw(JarLook(t.color, t)), scale = 5.dp)
-                    else -> BufImage(PetArt.draw(Pet.BULLFINCH, PetPose(f = (tick / 6) % 4, fed = true)), scale = 4.dp)
+                    else -> BufImage(PetArt.draw(Pet.BULLFINCH, PetPose(f = PetArt.idle(tick * Art.FRAME_MS / 1000.0, 3), fed = true)), scale = 4.dp)
                 }
             }
             when (page) {

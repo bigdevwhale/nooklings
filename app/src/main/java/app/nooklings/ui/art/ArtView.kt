@@ -23,7 +23,7 @@ object Art {
     @Volatile var still = false
 
     /** Art pixels advance about this often. */
-    const val FRAME_MS = 90L
+    const val FRAME_MS = 45L
 }
 
 fun Buf.toBitmap(): Bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also { it.setPixels(d, 0, w, 0, 0, w, h) }

@@ -12,24 +12,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import app.nooklings.R
 
-/** The room's own materials: dark wood, cream paper, brass, and the red of the gingham on the jar lids. */
+/** An evening around the room: dusk indigo for the walls of the app, cream paper, brass, and lingonberry red. */
 @Immutable
 object C {
-    val wood = Color(0xFF4A2C1A)
-    val woodD = Color(0xFF2C180E)
-    val woodL = Color(0xFF6A4228)
-    val night = Color(0xFF140C08)
-    val ink = Color(0xFF2A160E)
-    val paper = Color(0xFFF6EAD0)
-    val paperD = Color(0xFFE2CFA6)
+    val wood = Color(0xFF1E2240)
+    val woodD = Color(0xFF151830)
+    val woodL = Color(0xFF2E3560)
+    val night = Color(0xFF0C0E1E)
+    val ink = Color(0xFF1A1A30)
+    val paper = Color(0xFFF4ECDA)
+    val paperD = Color(0xFFE2D6BC)
     val note = Color(0xFFFFF6E0)
-    val muted = Color(0xFF80624A)
-    val brass = Color(0xFFE8B840)
-    val brassL = Color(0xFFFFF0A0)
-    val brassD = Color(0xFFA87418)
-    val crim = Color(0xFFC2402F)
-    val crimD = Color(0xFF7E2418)
-    val crimL = Color(0xFFF0806C)
+    val muted = Color(0xFF7E86B0)
+    val brass = Color(0xFFF2C14E)
+    val brassL = Color(0xFFFFF0A8)
+    val brassD = Color(0xFFB07E1C)
+    val crim = Color(0xFFE0605A)
+    val crimD = Color(0xFF9A3036)
+    val crimL = Color(0xFFF59088)
 
     fun of(rgb: Int) = Color(0xFF000000 or (rgb.toLong() and 0xFFFFFF))
 }

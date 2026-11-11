@@ -63,6 +63,7 @@ import app.nooklings.ui.Home
 import app.nooklings.ui.Names
 import app.nooklings.ui.Nav
 import app.nooklings.ui.Plural
+import app.nooklings.ui.art.Art
 import app.nooklings.ui.art.JarArt
 import app.nooklings.ui.art.PetArt
 import app.nooklings.ui.art.PetPose
@@ -230,7 +231,7 @@ private fun QuietStep(done: () -> Unit, back: () -> Unit) {
     }
     val tick = rememberTick()
     Heading(stringResource(R.string.c_hush))
-    BufImage(PetArt.draw(Pet.DORMOUSE, PetPose(f = (tick / 8) % 4, sleep = true)), scale = 6.dp)
+    BufImage(PetArt.draw(Pet.DORMOUSE, PetPose(f = PetArt.idle(tick * Art.FRAME_MS / 1000.0, 1), sleep = true)), scale = 6.dp)
     if (granted == false) Text(stringResource(R.string.c_mic_denied), style = T.Body.copy(color = C.paperD), textAlign = TextAlign.Center)
     else {
         val left = (need - got).toInt().coerceAtLeast(0)
@@ -338,7 +339,7 @@ private fun SealStep(cap: Cap, tag: Tag, done: () -> Unit) {
     val j = draft ?: return
     val k = if (start < 0) 0 else tick - start
     Heading(stringResource(R.string.c_seal))
-    BufImage(JarArt.draw(j.look(), 0, fill = (k / 8f).coerceAtMost(1f), lid = k > 10), scale = 9.dp)
+    BufImage(JarArt.draw(j.look(), 0, fill = (k * Art.FRAME_MS / 720f).coerceAtMost(1f), lid = k * Art.FRAME_MS > 900), scale = 9.dp)
     Field(label, { label = it.take(40) }, stringResource(Names.label(tag)), Modifier.widthIn(max = 320.dp), style = T.Label)
     Text(listOfNotNull(j.wx?.let { stringResource(Names.wx(it)) }, j.temp?.let { (if (it > 0) "+" else "") + it + "°" }, j.place.takeIf { it.isNotBlank() }).joinToString(" · "),
         style = T.Small.copy(color = C.paperD))
