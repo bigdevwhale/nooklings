@@ -6,6 +6,13 @@ line "<!-- tg", then 2-4 short lines in Russian for users (what is new, what is 
 then close it like any HTML comment. The release notes carry it, and the chat bot posts those lines.
 -->
 
+## [1.1.0] - 2026-11-11
+
+### Changed
+- The six lodgers are redrawn: clearer faces and shapes, a striped cat, a moth in round glasses, a bullfinch in profile, a ringed tail for the raccoon.
+- The interface is evening blue instead of dark brown: dusk indigo, cream paper, brass and lingonberry red.
+- Smoother animation: lodgers breathe slowly instead of twitching, and the stove, the jars and the hearts move at twice the frame rate.
+
 ## [1.0.0] - 2026-10-30
 
 ### Added
